@@ -1,49 +1,51 @@
-import React from "react";
-import './App.css';
-class App extends React.Component {
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
-	// Constructor
-	constructor(props) {
-		super(props);
+function App() {
+	const [isLoading, setLoading] = useState(true);
+	const [country, setCountry] = useState();
 
-		this.state = {
-			items: [],
-			DataisLoaded: false
-		};
-	}
+	const baseurl = "'http://jagah2-env.eba-m3zawypz.us-east-2.elasticbeanstalk.com:80";
 
-	// ComponentDidMount is used to
-	// execute the code
-	componentDidMount() {
-		fetch(
-"http://jagah2-env.eba-m3zawypz.us-east-2.elasticbeanstalk.com/getCountries")
-			.then((res) => res.json())
-			.then((json) => {
-				this.setState({
-					items: json,
-					DataisLoaded: true
-				});
-			})
-	}
-	render() {
-		const { DataisLoaded, items } = this.state;
-		if (!DataisLoaded) return <div>
-			<h1> Pleses wait some time.... </h1> </div> ;
+	useEffect(() => {
+		axios.get(`${baseurl}/api/getCountries`).then((response) => {
+			setCountry(response.data);
+			setLoading(false);
+		});
+	}, []);
 
+	if (isLoading) {
 		return (
-		<div className = "App">
-			<h1> Fetch data from an api in react </h1> {
-				items.map((item) => (
-				<ol key = { item.id } >
-					User_Name: { item.country_name },
-					Full_Name: { item.country_code }
-				
-					</ol>
-				))
-			}
+			<div
+				style={{
+					display: "flex",
+					flexDirection: "column",
+					alignItems: "center",
+					justifyContent: "center",
+					height: "100vh",
+					backgroundColor: "grey",
+				}}
+			>
+				Loading...
+			</div>
+		);
+	}
+
+	return (
+		<div
+			style={{
+				display: "flex",
+				flexDirection: "column",
+				alignItems: "center",
+				justifyContent: "center",
+				height: "100vh",
+				backgroundColor: "grey",
+			}}
+		>
+			<div>{country.country_name}</div>
+			<img alt={country.name} src={country.sprites.front_default} />
 		</div>
 	);
-}
 }
 
 export default App;
